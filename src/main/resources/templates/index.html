@@ -23,7 +23,8 @@
             console.log('Connected: ' + frame);
 
             // 2. Subscribe to the Public Topic
-            stompClient.subscribe('/topic/public', function (messageOutput) {
+            stompClient.subscribe('/topic/ishan', function (messageOutput) {
+                console.log("message:received");
                 showMessage(messageOutput.body);
             });
         });
@@ -31,8 +32,14 @@
 
     function sendMsg() {
         var text = document.getElementById("message").value;
+        text = {}
         // 3. Send message to the Controller
-        stompClient.send("/app/sendMessage", {}, text);
+<!--        stompClient.send("/app/sendMessage", {}, text);-->
+            stompClient.send("/app/sendPersonalMessage", {}, JSON.stringify({
+        from: "ishan",
+        to: "ishan",
+        message: "Hello World"
+    }));
     }
 
     function showMessage(message) {

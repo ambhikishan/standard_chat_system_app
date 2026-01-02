@@ -20,16 +20,18 @@ public class RedisConfig {
         container.setConnectionFactory(connectionFactory);
 
         // Subscribe to the topic "chat"
-        container.addMessageListener(listenerAdapter, new PatternTopic("chat"));
+        container.addMessageListener(listenerAdapter, new PatternTopic("chat:*"));
         return container;
     }
 
-    // 2. Link the Listener to our specific Java method
+//     2. Link the Listener to our specific Java method
     @Bean
     MessageListenerAdapter listenerAdapter(RedisReceiver receiver) {
         // When a message arrives, call the method "receiveMessage" in RedisReceiver class
-        return new MessageListenerAdapter(receiver, "receiveMessage");
+        return new MessageListenerAdapter(receiver, "receivePersonalMessage");
     }
+
+
 
     // 3. Template to Write data to Redis
     @Bean
