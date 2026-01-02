@@ -7,7 +7,7 @@ public class MessageBody {
 
     @Override
     public String toString() {
-        return "MessageBody{" +
+        return "{" +
                 "from='" + from + '\'' +
                 ", to='" + to + '\'' +
                 ", message='" + message + '\'' +
