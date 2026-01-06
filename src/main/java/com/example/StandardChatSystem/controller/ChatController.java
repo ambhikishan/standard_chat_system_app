@@ -25,6 +25,7 @@ public class ChatController {
     @MessageMapping("/sendPersonalMessage")
     public void sendPersonalMessage(MessageBody message) {
         System.out.println("Publishing to Redis: " + message.toString());
-        redisTemplate.convertAndSend("chat:"+message.getTo(), message.toString());
+        redisTemplate.convertAndSend("chat:"+message.getFrom(), message.toString()); // "chat:message.getFrom() is the connected user to redis server through the websocket"
+                                           // this channel in the redis server will get deleted when the user is offline and free the cpu resource
     }
 }
