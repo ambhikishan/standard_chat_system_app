@@ -40,7 +40,9 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             String destination = accessor.getDestination();
             String username = accessor.getUser().getName();
             // Allow only: /topic/{username}
-            if (!destination.equals("/topic/" + username)) {
+
+            if (!destination.equals("/topic/" + username) ) {
+                System.out.println("error in subscription");
                 throw new IllegalArgumentException("Unauthorized subscription");
             }
         }

@@ -25,7 +25,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**").permitAll()
-
                         .anyRequest().authenticated()
                 );
 

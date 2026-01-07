@@ -42,4 +42,11 @@ public class RedisReceiver {
 //                message
 //        );
     }
+
+    public void groupMessaging(String message)
+    {
+
+        webSocket.convertAndSend("/topic/group", Optional.of(Map.of("message", message)));
+    }
+
 }
