@@ -35,6 +35,7 @@ public class ChatController {
         redisTemplate.convertAndSend("chat:"+typingNotification.getFrom(),typingNotification.toString());
     }
 
+
     @MessageMapping("sendMessageInGroup")
     public void sendMessageInGroup(MessageBody message){
         System.out.println(message.toString());
