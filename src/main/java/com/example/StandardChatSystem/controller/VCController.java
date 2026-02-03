@@ -15,7 +15,7 @@ public class VCController {
     @MessageMapping("/video/call")
     public void videoCall(Rtc rtc)
     {
-        redisTemplate.convertAndSend("chat:*"+rtc.getFrom(), rtc);
+        redisTemplate.convertAndSend("chat:*"+rtc.getFrom(), rtc.toString());
         System.out.println("video call initiated");
     }
 }

@@ -5,6 +5,7 @@ import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,10 @@ public class RedisReceiver {
 
     public void receivePersonalMessage(String message) {
 //        System.out.println("Publishing to Redis: " + message);
+
+        ObjectMapper response = new ObjectMapper();
+
+
         System.out.println("Method called sender: ");
         Pattern p = Pattern.compile("to='(.*?)'");
         Pattern messagePattern = Pattern.compile("message='(.*?)'");
@@ -40,8 +45,8 @@ public class RedisReceiver {
             String sdp = m5.group(1);
             String to = m.group(1);
             String from = m3.group(1);
-            webSocket.convertAndSend("/topic/"+to,Optional.of(Map.of("to", to, "from", from , "type",type,"sdp",sdp)));
-            System.out.println(message);
+            webSocket.convertAndSend("/topic/"+to,response.writeValueAsString(Map.of("to", to, "from", from , "type",type,"sdp",sdp)));
+            System.out.println(message + "response");
             return;
         }
 
@@ -50,8 +55,8 @@ public class RedisReceiver {
             String to = m.group(1);
             String messageBody = m2.group(1);   // only the text inside quotes
             String from = m3.group(1);
-            webSocket.convertAndSend("/topic/" + to, Optional.of(Map.of("message", messageBody, "from", from )));
-
+            webSocket.convertAndSend("/topic/" + to,Optional.of(Map.of("to",to,"from",from,"message",message.substring(26+to.length()+from.length(),message.length()-2))));
+            System.out.println(createJsonManually(from,to,message));
         }
 
 //        webSocket.convertAndSendToUser(
@@ -67,4 +72,21 @@ public class RedisReceiver {
         webSocket.convertAndSend("/topic/group", Optional.of(Map.of("message", message)));
     }
 
+    public String createJsonManually(String from, String to, String messageBody) {
+        // 1. Sanitize the message: Replace any double quotes inside the text with escaped quotes (\")
+        // If your message contains newlines, you must also replace them with \n
+        String safeMessage = messageBody
+                .replace("\"", "\\\"")   // Escape quotes
+                .replace("\n", "\\n")   // Escape new lines
+                .replace("\r", "");      // Remove carriage returns
+
+        // 2. Build the JSON string manually
+        // Syntax: {"key": "value", "key2": "value2"}
+        return String.format(
+                "{\"from\": \"%s\", \"to\": \"%s\", \"message\": \"%s\"}",
+                from,
+                to,
+                safeMessage
+        );
+    }
 }
