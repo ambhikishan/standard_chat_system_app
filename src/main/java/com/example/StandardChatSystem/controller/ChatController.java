@@ -15,7 +15,8 @@ public class ChatController {
 
     // 1. User sends message to "/app/sendMessage"
 //    @MessageMapping("/sendMessage")
-//    public void sendMessage(String message) {
+//    public void sendMessage(String message)
+//    {
 //
 //        // 2. Instead of broadcasting directly, we publish to REDIS
 //        // This ensures users on OTHER servers also get the message.
