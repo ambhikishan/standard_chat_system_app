@@ -17,7 +17,7 @@ public class ChatController {
     private StringRedisTemplate redisTemplate;
 
     @Autowired
-    private KafkaTemplate<String,MessageBody> kafkaTemplate;
+    private KafkaTemplate<String,String> kafkaTemplate;
 
     @MessageMapping("/sendPersonalMessage")
     public void sendPersonalMessage(MessageBody message) {
@@ -25,7 +25,7 @@ public class ChatController {
         redisTemplate.convertAndSend("chat:"+message.getFrom(), message.toString()); // "chat:message.getFrom() is the connected user to redis server through the websocket"
                                            // this channel in the redis server will get deleted when the user is offline and free the cpu resource
         String conversationKey = message.getFrom()+"_"+message.getTo();
-        kafkaTemplate.send("chat-db-topic",conversationKey,message);
+        kafkaTemplate.send("chat-db-topic",conversationKey,message.toString());
     }
 
     @MessageMapping("/chat/typing")
