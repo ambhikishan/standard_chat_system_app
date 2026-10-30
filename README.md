@@ -9,7 +9,7 @@ This is a scalable chat system application that supports multiple running instan
 * **Redis Server as Central Brain**: Redis is used as the central message broker and data store for managing states, user presence, and message delivery.
 * **Horizontal Scalability**: Multiple instances of the chat server can run in parallel, allowing high availability and load distribution.
 * **Distributed Client Handling**: Clients can connect to any available instance. Even if messages are processed by different server instances, Redis ensures they are correctly delivered.
-
+* **Kafka Producer**: Using Kafka for saving the messages to Kafka as a producer.
 ## Benefits
 
 * Fault-tolerant communication
@@ -21,3 +21,15 @@ This is a scalable chat system application that supports multiple running instan
 * User authentication
 * Chat history persistence in SQL/NoSQL database
 * WebSocket security improvements
+
+## Angular Frontend For This Application
+*https://github.com/ambhikishan/text-app
+
+## Login MicroService For This Application
+* https://github.com/ambhikishan/login-create-account-service
+
+## Email MicroService For OTP's and Verification 
+* https://github.com/ambhikishan/email-micro-service
+
+## Kafka Consumer and Saving to MongoDB for the Messages
+* https://github.com/ambhikishan/chat-db-worker

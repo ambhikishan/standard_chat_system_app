@@ -4,8 +4,11 @@ import com.example.StandardChatSystem.pojo.MessageBody;
 import com.example.StandardChatSystem.pojo.TypingNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+
+import java.util.Date;
 
 @Controller
 public class ChatController {
@@ -13,22 +16,16 @@ public class ChatController {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    // 1. User sends message to "/app/sendMessage"
-//    @MessageMapping("/sendMessage")
-//    public void sendMessage(String message)
-//    {
-//
-//        // 2. Instead of broadcasting directly, we publish to REDIS
-//        // This ensures users on OTHER servers also get the message.
-//        System.out.println("Publishing to Redis: " + message);
-//        redisTemplate.convertAndSend("chat", message);
-//    }
+    @Autowired
+    private KafkaTemplate<String,MessageBody> kafkaTemplate;
 
     @MessageMapping("/sendPersonalMessage")
     public void sendPersonalMessage(MessageBody message) {
         System.out.println("Publishing to Redis: " + message.toString());
         redisTemplate.convertAndSend("chat:"+message.getFrom(), message.toString()); // "chat:message.getFrom() is the connected user to redis server through the websocket"
                                            // this channel in the redis server will get deleted when the user is offline and free the cpu resource
+        String conversationKey = message.getFrom()+"_"+message.getTo();
+        kafkaTemplate.send("chat-db-topic",conversationKey,message);
     }
 
     @MessageMapping("/chat/typing")
