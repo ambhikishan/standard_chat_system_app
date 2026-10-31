@@ -27,7 +27,7 @@ public class ChatController {
             redisTemplate.convertAndSend("chat:" + message.getFrom(), message.toString()); // "chat:message.getFrom() is the connected user to redis server through the websocket"
             // this channel in the redis server will get deleted when the user is offline and free the cpu resource
         if(!message.toString().contains("#usertyping")) {
-            String conversationKey = message.getFrom() + "_" + message.getTo();
+            String conversationKey = message.getFrom() + "@" + message.getTo();
             kafkaTemplate.send("chat-db-topic", conversationKey, message.toString()).get();
         }
     }
