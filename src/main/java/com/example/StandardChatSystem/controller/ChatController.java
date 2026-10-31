@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 public class ChatController {
@@ -20,12 +21,15 @@ public class ChatController {
     private KafkaTemplate<String,String> kafkaTemplate;
 
     @MessageMapping("/sendPersonalMessage")
-    public void sendPersonalMessage(MessageBody message) {
-        System.out.println("Publishing to Redis: " + message.toString());
-        redisTemplate.convertAndSend("chat:"+message.getFrom(), message.toString()); // "chat:message.getFrom() is the connected user to redis server through the websocket"
-                                           // this channel in the redis server will get deleted when the user is offline and free the cpu resource
-        String conversationKey = message.getFrom()+"_"+message.getTo();
-        kafkaTemplate.send("chat-db-topic",conversationKey,message.toString());
+    public void sendPersonalMessage(MessageBody message) throws ExecutionException, InterruptedException {
+
+            System.out.println("Publishing to Redis: " + message.toString());
+            redisTemplate.convertAndSend("chat:" + message.getFrom(), message.toString()); // "chat:message.getFrom() is the connected user to redis server through the websocket"
+            // this channel in the redis server will get deleted when the user is offline and free the cpu resource
+        if(!message.toString().contains("#usertyping")) {
+            String conversationKey = message.getFrom() + "_" + message.getTo();
+            kafkaTemplate.send("chat-db-topic", conversationKey, message.toString()).get();
+        }
     }
 
     @MessageMapping("/chat/typing")
